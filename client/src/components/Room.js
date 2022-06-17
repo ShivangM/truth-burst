@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { messageActions } from '../store/messageSlice';
-import { userActions } from '../store/userSlice';
 import ChatBox from './ChatBox';
 import UserOnline from './UserOnline';
 import { TbClipboardText } from 'react-icons/tb'
 import Game from './Game';
+import { userActions } from '../store/userSlice';
+import { messageActions } from '../store/messageSlice';
 
 function Room() {
   const user = useSelector(state => state.user.user)
@@ -20,19 +20,21 @@ function Room() {
   }, [room]);
 
   useEffect(() => {
-    socket.on('message', message => {
-      dispatch(messageActions.setMessage(message))
-    });
+    if(socket){
 
-    socket.on("roomData", ({ users }) => {
-      console.log(users)
-      dispatch(userActions.setActiveUser(users))
-    });
+      socket.on('message', message => {
+        dispatch(messageActions.setMessage(message))
+      });
+      
+      socket.on("roomData", ({ users }) => {
+        dispatch(userActions.setActiveUser(users))
+      });
+    }
   }, []);
 
   const copyRoomCode = () => {
     navigator.clipboard.writeText(room)
-    alert(`Copied to Clipboard`)
+    // alert(`Copied to Clipboard`)
   }
 
   return (

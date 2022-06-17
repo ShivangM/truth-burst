@@ -12,8 +12,10 @@ function App() {
     <div className="bg-[#FFE3A9] md:h-screen w-screen">
       <BrowserRouter>
         <Routes>
-          <Route exact path="/" element={<Home/>} />
-          <Route exact path="/room" element={<Room/>}/>
+          <Route exact path="/" element={<Home />} />
+          <Route exact path="/room" element={<Room />}>
+            <Route exact path="*" element={<Home />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

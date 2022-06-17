@@ -25,38 +25,50 @@ function Home() {
   }
 
   useEffect(() => {
-    if (socket === null) setSocket(io(ENDPOINT))
-    dispatch(userActions.setSocket(socket))
+    const getSocket = async ()=>{
+      if (socket === null){
+        const socketTmp = await io(ENDPOINT)
+        setSocket(socketTmp)
+        dispatch(userActions.setSocket(socketTmp))
+      } 
+    }
+    getSocket()
   }, [socket]);
 
-  const createRoom = () => {
+  const createRoom = async () => {
     const name = document.getElementById("name").value
     if (!name) { alert("Please Enter Your Name!"); return }
     const room = generateRoomCode();
-    const role = "host"
-    dispatch(userActions.setUser({ name: name, room: room, id: socket.id, role:role }))
-    socket.emit('join', { name: name, room: room, role:role }, (error) => {
+    dispatch(userActions.setUser({ name: name, room: room, id: socket.id }))
+
+    await socket.emit('createRoom', { host: name, code: room }, (error) => {
+      if (error) {
+        alert(error);
+      }
+    });
+    
+    await socket.emit('join', { name: name, room: room }, (error) => {
       if (error) {
         alert(error);
       }
     });
 
-    navigate(`/room`)
+    navigate(`/room/${room}`)
   }
 
-  const joinRoom = () => {
+  const joinRoom = async () => {
     const name = document.getElementById("nick-name").value
     const room = document.getElementById("room-code").value
     if (!name || !room) { alert("Please Enter Valid Values!"); return }
-    const role = "player"
-    dispatch(userActions.setUser({ name: name, room: room, id: socket.id, role:role }))
-    socket.emit('join', { name: name, room: room, role:role }, (error) => {
+    dispatch(userActions.setUser({ name: name, room: room, id: socket.id}))
+
+    await socket.emit('join', { name: name, room: room }, (error) => {
       if (error) {
         alert(error);
       }
     });
 
-    navigate(`/room`)
+    navigate(`/room/${room}`)
   }
 
   return (

@@ -1,28 +1,25 @@
-const users = [];
+// const users = [];
 
-const addUser = ({ id, name, room, role }) => {
-  name = name.trim().toLowerCase();
-  room = room.trim().toLowerCase();
+const User = require("./models/UserModel");
 
-  const existingUser = users.find((user) => user.room === room && user.name === name);
-
+const addUser = async ({ id, name, room }) => {
   if(!name || !room) return { error: 'Username and room are required.' };
-  if(existingUser) return { error: 'Username is taken.' };
+  username = name.trim()
+  userroom = room.trim().toLowerCase();
 
-  const user = { id, name, room, role };
+  // const existingUser = users.find((user) => user.room === room && user.name === name);
+  const existingUser = await User.find({name: username, room: userroom}).exec()
+  if(existingUser.length > 0) return true;
 
-  users.push(user);
-  return { user };
+  const user = new User({ socketID: id, name:username, room:userroom });
+  await user.save();
+  return false
 }
 
-const removeUser = (id) => {
-  const index = users.findIndex((user) => user.id === id);
+const removeUser = async (id) => {await User.findOneAndDelete({socketId: id})}
 
-  if(index !== -1) return users.splice(index, 1)[0];
-}
+const getUser = async (id) => await User.findOne({socketId: id});
 
-const getUser = (id) => users.find((user) => user.id === id);
-
-const getUsersInRoom = (room) => users.filter((user) => user.room === room);
+const getUsersInRoom = async (userRoom) => await User.find({room: userRoom}).exec()
 
 module.exports = { addUser, removeUser, getUser, getUsersInRoom };

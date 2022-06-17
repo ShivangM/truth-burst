@@ -18,7 +18,7 @@ function UserOnline() {
                             <div className="bg-[#FF5D5D] flex justify-center items-center p-2 m-1 rounded-xl text-white" key={index}>
                                 <RiRadioButtonLine className='text-white'/>
                                 <p className='text-white px-2'>{value.name}</p>
-                                {value.role==="host"?<FaCrown className='text-yellow-300'/>:null}
+                                {/* {value.role==="host"?<FaCrown className='text-yellow-300'/>:null} */}
                             </div>
                         )
                     })
