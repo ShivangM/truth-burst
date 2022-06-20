@@ -4,8 +4,8 @@ import { userActions } from '../store/userSlice';
 import { useNavigate } from 'react-router-dom'
 import { roomActions } from '../store/roomSlice';
 const { io } = require("socket.io-client");
-const ENDPOINT = "https://truth-burst.herokuapp.com/"
-// const ENDPOINT = "http://localhost:5000"
+// const ENDPOINT = "https://truth-burst.herokuapp.com/"
+const ENDPOINT = "http://localhost:5000"
 
 function Home() {
   const [socket, setSocket] = useState(null);
@@ -39,7 +39,7 @@ function Home() {
   const createRoom = async () => {
     const name = document.getElementById("name").value
     if (!name) { alert("Please Enter Your Name!"); return }
-    const rounds = parseInt(document.getElementById("rounds").value)
+    const rounds = parseInt(document.getElementById("rounds").value) + 1
     if (!rounds) { alert("Please Enter Number Of Rounds!"); return }
     if (rounds < 1 || rounds > 10) { alert("Rounds must be in 1-10"); return }
     

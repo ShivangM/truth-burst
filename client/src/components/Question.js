@@ -11,8 +11,6 @@ function Question() {
     const votes = useSelector(state => state.room.votes)
     const socket = useSelector(state => state.user.socket)
 
-    const dispatch = useDispatch()
-
     const nextRound = async () => {
         const round = (roundNumber + 1) % roomData.rounds
         await socket.emit('changeRound', { round, room: user.room }, () => alert("Error"))
@@ -29,7 +27,7 @@ function Question() {
                 {
                     ((user.name === roomData.host) && (votes.length > 0)) ?
                         <button type="button" className="py-2 px-6 w-full md:w-fit my-4 md:my-0 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-base md:text-2xl font-semibold shadow-md focus:outline-none rounded-lg" onClick={nextRound}>
-                            Next Round
+                            {roundNumber === roomData.rounds - 1 ? "Show Leaderboard" : "Next Round"}
                         </button>
                         : null
                 }

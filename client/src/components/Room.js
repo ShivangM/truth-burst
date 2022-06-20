@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ChatBox from './ChatBox';
 import UserOnline from './UserOnline';
 import { TbClipboardText } from 'react-icons/tb'
+import { ImClipboard } from 'react-icons/im'
 import Game from './Game';
 import { userActions } from '../store/userSlice';
 import { messageActions } from '../store/messageSlice';
@@ -54,14 +55,20 @@ function Room() {
         dispatch(userActions.setActiveUser(users))
         dispatch(userActions.setSelected(""))
         dispatch(userActions.setDisabled(false))
-        document.getElementById("answer").value=""
+        document.getElementById("answer").value = ""
       });
     }
   }, []);
 
+  const [copied, setCopied] = useState(false);
+
   const copyRoomCode = async () => {
     await navigator.clipboard.writeText(room)
-    // alert(`Copied to Clipboard`)
+    setCopied(true)
+
+    setTimeout(() => {
+      setCopied(false)
+    }, 1000);
   }
 
   const loading = useSelector(state => state.room.loading)
@@ -76,7 +83,10 @@ function Room() {
             <a href='/' className='font-semibold text-white pt-4 md:p-4 md:m-4 text-2xl'>Truth Burst</a>
             <div className="bg-white rounded-xl w-3/4 md:w-fit h-fit p-4 m-4 flex items-center justify-around">
               <p className='whitespace-nowrap px-2'>Room Code: <b className='font-semibold'>{room}</b></p>
-              <TbClipboardText className='text-xl cursor-pointer' onClick={copyRoomCode} />
+              {!copied ?
+                <TbClipboardText className='text-xl cursor-pointer' onClick={copyRoomCode} />
+                : <ImClipboard />
+              }
             </div>
           </div>
           <Game />

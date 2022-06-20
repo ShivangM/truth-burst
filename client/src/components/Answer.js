@@ -47,12 +47,12 @@ function Answer(props) {
                 </div>
             :
             answer.name === user.name ?
-                <button type='button' disabled className={currentUser} key={props.key}>
+                <button type='button felx' disabled className={currentUser} key={props.key}>
                     {ReactEmoji.emojify(answer.text)}
                 </button>
                 :
                 selected === ""?
-                    <button type='button' className={otherUsers} key={props.key} onClick={() => { vote(answer.name) }}>
+                    <button type='button felx' className={otherUsers} key={props.key} onClick={() => { vote(answer.name) }}>
                         {ReactEmoji.emojify(answer.text)}
                     </button>
                     :
