@@ -20,11 +20,9 @@ function AnswerInput() {
 
     return (
         disabled?
-        <div className="h-1/6 p-4 w-full bottom-0 flex md:justify-between items-center" disabled>
-            <input type="text" className=' px-5 py-3 w-[90%] rounded-2xl border-black border' placeholder='Enter Your Answer' id='answer'
-                onKeyPress={event => event.key === 'Enter' ? sendAnswer() : null}
-            />
-            <AiOutlineSend className="text-xl w-[10%] cursor-pointer" onClick={sendAnswer}/>
+        <div className="h-1/6 p-4 w-full bottom-0 flex md:justify-between items-center">
+            <input type="text" className=' px-5 py-3 w-[90%] rounded-2xl border-black border' placeholder='Enter Your Answer' disabled/>
+            {/* <AiOutlineSend className="text-xl w-[10%] cursor-pointer" disabled/> */}
         </div>
         :
         <div className="h-1/6 p-4 w-full bottom-0 flex md:justify-between items-center">

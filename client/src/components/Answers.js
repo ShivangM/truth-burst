@@ -8,7 +8,7 @@ function Answers() {
 
   return (
     answers.length > 0?
-    <div className='h-full p-4 overflow-y-sroll flex flex-col'>
+    <div className='h-full p-4 overflow-y-sroll flex flex-col '>
       {
         answers.map((value, index)=>{
           return <Answer answer={value} key={index}/>

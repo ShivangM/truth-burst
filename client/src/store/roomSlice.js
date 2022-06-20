@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 
 const roomSlice = createSlice({
     name: "room",
-    initialState: {roomData: {}, question: "", roundNumber: 0, answers: [], votes: []},
+    initialState: {roomData: {}, question: "", roundNumber: 0, answers: [], votes: [], loading: false},
     reducers: {
         setRoomData(state, action){
             state.roomData = action.payload
@@ -18,6 +18,9 @@ const roomSlice = createSlice({
         },
         setVotes(state, action){
             state.votes = action.payload
+        },
+        setLoading(state, action){
+            state.loading = action.payload
         },
     }
 })

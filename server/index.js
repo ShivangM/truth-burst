@@ -54,6 +54,17 @@ io.on('connection', (socket) => {
     try {
       const newRoom = new Room({ host, code, rounds })
       await newRoom.save()
+
+      const { error } = await addUser({ id: socket.id, name: host, room: code });
+      if (error) return callback(error);
+      await socket.join(code);
+
+      const roomData = await getRoomData(code, host)
+      const users = await getUsersInRoom(code)
+
+      io.to(code).emit('roomData', roomData);
+      io.to(code).emit('users', users);
+
     } catch (error) {
       return callback("An Error has Occured");
     }
@@ -61,17 +72,20 @@ io.on('connection', (socket) => {
   });
 
   socket.on('join', async ({ name, room }, callback) => {
-    const existingRoom = await Room.findOne({ code: room })
+    const existingRoom = await Room.findOne({ code: room }).exec()
     if (!existingRoom) return callback("Please join with valid room code")
-    const {error} = await addUser({ id: socket.id, name, room });
+    const { error } = await addUser({ id: socket.id, name, room });
     if (error) return callback(error);
 
-    socket.join(room);
+    await socket.join(room);
     socket.broadcast.to(room).emit('message', { userName: 'Game Room', text: `${name} joined the room!` });
 
     const roomData = await getRoomData(room, name)
     const users = await getUsersInRoom(room)
-    io.to(room).emit('roomData', { roomData, users });
+
+    io.to(room).emit('roomData', roomData);
+    io.to(room).emit('users', users);
+
     callback();
   });
 
@@ -161,7 +175,12 @@ io.on('connection', (socket) => {
     if (user) {
       removeUser(socket.id)
       io.to(user.room).emit('message', { user: 'Game Room', text: `${user.name} has left.` });
-      io.to(user.room).emit('roomData', { roomData: await getRoomData(user.room, user.name), users: await getUsersInRoom(user.room) });
+      const roomData = await getRoomData(user.room, user.name)
+      const users = await getUsersInRoom(user.room)
+
+      io.to(user.room).emit('roomData', roomData);
+      io.to(user.room).emit('users', users);
+
       try {
         await Answer.findOneAndDelete({ $and: [{ name: user.name }, { room: user.room }] }).exec()
       } catch (error) {

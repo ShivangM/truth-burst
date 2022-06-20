@@ -8,6 +8,7 @@ import Game from './Game';
 import { userActions } from '../store/userSlice';
 import { messageActions } from '../store/messageSlice';
 import { roomActions } from '../store/roomSlice';
+import LoadingScreen from './LoadingScreen';
 
 function Room() {
   const user = useSelector(state => state.user.user)
@@ -20,15 +21,19 @@ function Room() {
     if (room === "") navigate("/")
   }, [room]);
 
+
   useEffect(() => {
     if (socket) {
       socket.on('message', message => {
         dispatch(messageActions.setMessage(message))
       });
 
-      socket.on("roomData", ({ users, roomData }) => {
-        dispatch(userActions.setActiveUser(users))
+      socket.on('roomData', roomData => {
         dispatch(roomActions.setRoomData(roomData))
+      });
+
+      socket.on('users', users => {
+        dispatch(userActions.setActiveUser(users))
       });
 
       socket.on('question', question => {
@@ -49,38 +54,43 @@ function Room() {
         dispatch(userActions.setActiveUser(users))
         dispatch(userActions.setSelected(""))
         dispatch(userActions.setDisabled(false))
+        document.getElementById("answer").value=""
       });
     }
   }, []);
 
   const copyRoomCode = async () => {
     await navigator.clipboard.writeText(room)
-    alert(`Copied to Clipboard`)
+    // alert(`Copied to Clipboard`)
   }
 
-  return (
-    <div className='flex flex-col md:flex-row'>
+  const loading = useSelector(state => state.room.loading)
 
-      <div className="flex flex-col w-full md:w-3/4 md:h-screen min-h-screen">
-        <div className="flex flex-col md:flex-row justify-between m-5 h-fit items-center bg-[#FF5D5D] rounded-2xl">
-          <h1 className='font-semibold text-white pt-4 md:p-4 md:m-4 text-2xl'>Truth Burst</h1>
-          <div className="bg-white rounded-xl w-3/4 md:w-fit md:h-fit p-4 m-4 flex items-center justify-around">
-            <p className='whitespace-nowrap px-2'>Room Code: <b className='font-semibold'>{room}</b></p>
-            <TbClipboardText className='text-xl cursor-pointer' onClick={copyRoomCode} />
+  return (
+    loading ?
+      <LoadingScreen />
+      :
+      <div className='flex flex-col md:flex-row'>
+        <div className="flex flex-col w-full md:w-3/4 md:h-screen min-h-screen">
+          <div className="flex flex-col md:flex-row justify-between m-5 h-fit items-center bg-[#FF5D5D] rounded-2xl">
+            <a href='/' className='font-semibold text-white pt-4 md:p-4 md:m-4 text-2xl'>Truth Burst</a>
+            <div className="bg-white rounded-xl w-3/4 md:w-fit md:h-fit p-4 m-4 flex items-center justify-around">
+              <p className='whitespace-nowrap px-2'>Room Code: <b className='font-semibold'>{room}</b></p>
+              <TbClipboardText className='text-xl cursor-pointer' onClick={copyRoomCode} />
+            </div>
+          </div>
+          <Game />
+        </div>
+
+        <div className="h-screen w-full md:w-1/4">
+          <div className="h-1/3 md:h-1/4 p-5 pb-0">
+            <UserOnline />
+          </div>
+          <div className="h-2/3 md:h-3/4 p-5">
+            <ChatBox />
           </div>
         </div>
-        <Game />
       </div>
-
-      <div className="h-screen w-full md:w-1/4">
-        <div className="h-1/3 md:h-1/4 p-5 pb-0">
-          <UserOnline />
-        </div>
-        <div className="h-2/3 md:h-3/4 p-5">
-          <ChatBox />
-        </div>
-      </div>
-    </div>
   )
 }
 
