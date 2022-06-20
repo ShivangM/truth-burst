@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../store/userSlice';
+import ReactEmoji from 'react-emoji';
 
 function Answer(props) {
     const user = useSelector(state => state.user.user)
@@ -34,34 +35,34 @@ function Answer(props) {
         votes.length > 0 ?
             answer.name === user.name ?
                 <div className={currentUser} key={props.key}>
-                    <p><b className='font-semibold'>{answer.name}:</b> {answer.text}</p>
+                    <p><b className='font-semibold'>{answer.name}:</b> {ReactEmoji.emojify(answer.text)}</p>
                     <p><b className='font-semibold'>Vote Count:</b> {votesOnAnswer.length}</p>
                     <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p>
                 </div>
                 :
                 <div className={otherUsersDiv} key={props.key}>
-                    <p><b className='font-semibold'>{answer.name}:</b> {answer.text}</p>
+                    <p><b className='font-semibold'>{answer.name}:</b> {ReactEmoji.emojify(answer.text)}</p>
                     <p><b className='font-semibold'>Vote Count:</b> {votesOnAnswer.length}</p>
                     <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p>
                 </div>
             :
             answer.name === user.name ?
                 <button type='button' disabled className={currentUser} key={props.key}>
-                    {answer.text}
+                    {ReactEmoji.emojify(answer.text)}
                 </button>
                 :
                 selected === ""?
                     <button type='button' className={otherUsers} key={props.key} onClick={() => { vote(answer.name) }}>
-                        {answer.text}
+                        {ReactEmoji.emojify(answer.text)}
                     </button>
                     :
                     selected === answer.name?
                     <div disabled className={selectedClass} key={props.key}>
-                        {answer.text}
+                        {ReactEmoji.emojify(answer.text)}
                     </div>
                     :
                     <div disabled className={otherUsersAnswerDiv} key={props.key}>
-                        {answer.text}
+                        {ReactEmoji.emojify(answer.text)}
                     </div>
     )
 }

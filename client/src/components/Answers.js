@@ -8,7 +8,7 @@ function Answers() {
 
   return (
     answers.length > 0?
-    <div className='h-full p-4 overflow-y-sroll flex flex-col '>
+    <div className='h-[50vh] md:p-4 my-4 md:m-0 overflow-y-scroll flex flex-col '>
       {
         answers.map((value, index)=>{
           return <Answer answer={value} key={index}/>
@@ -16,7 +16,7 @@ function Answers() {
       }
     </div>
     :
-    <div className='h-full p-4 flex flex-col justify-center items-center'>
+    <div className='h-[50vh] p-4 flex flex-col justify-center items-center'>
       <Spinner />
       Waiting For Everyone Answer
     </div>

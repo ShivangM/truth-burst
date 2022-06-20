@@ -6,6 +6,7 @@ import Answers from './Answers';
 import { useDispatch, useSelector } from 'react-redux';
 import { roomActions } from '../store/roomSlice';
 import Spinner from './Spinner';
+import Leaderboards from './Leaderboards';
 
 function Game() {
     const roundNumber = useSelector(state => state.room.roundNumber)
@@ -13,10 +14,11 @@ function Game() {
     const roomData = useSelector(state => state.room.roomData)
     const user = useSelector(state => state.user.user)
     const socket = useSelector(state => state.user.socket)
+    const leaderboards = useSelector(state => state.room.leaderboards)
     const dispatch = useDispatch()
 
     const startGame = () => {
-        if(activeUsers.length < 3) {
+        if (activeUsers.length < 3) {
             alert("Atleast three players required to start Game!")
             return;
         }
@@ -27,7 +29,9 @@ function Game() {
             userName: "Game Room"
         }
 
-        const round = (roundNumber + 1) % roomData.rounds
+        dispatch(roomActions.setLeaderboards([]))
+
+        const round = roundNumber + 1
 
         socket.emit('sendMessage', message, () => alert("Error"));
         socket.emit('changeRound', { round, room: user.room }, () => alert("Error"))
@@ -40,29 +44,42 @@ function Game() {
         })
 
         socket.on('leaderboards', leaderboards => {
-            // dispatch(roomActions.setRoundNumber(roundNumber))
+            dispatch(roomActions.setLeaderboards(leaderboards))
         })
     }, [roundNumber]);
 
     return (
         roundNumber === 0 ?
-            <div className="flex flex-col justify-center items-center p-2 m-5 mt-0 h-full bg-white rounded-2xl min-h-screen md:min-h-0">
+            <div className="flex flex-col justify-center items-center p-2 m-5 mt-0 bg-white rounded-2xl min-h-[75vh] md:min-h-0 md:h-full">
                 {
-                    roomData.host === user.name ?
-                        <div className="flex flex-col justify-center items-center">
-                            <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-4xl font-semibold shadow-md focus:outline-none rounded-lg" onClick={startGame}>
-                                Start game
-                            </button>
-                        </div>
+                    leaderboards.length === 0 ?
+                        roomData.host === user.name ?
+                            <div className="flex flex-col justify-center items-center h-full">
+                                <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl md:text-4xl font-semibold shadow-md focus:outline-none rounded-lg" onClick={startGame}>
+                                    Start game
+                                </button>
+                            </div>
+                            :
+                            <div className="flex flex-col justify-center items-center h-full">
+                                <Spinner />
+                                Waiting for host to start Game!
+                            </div>
                         :
-                        <div className="flex flex-col justify-center items-center">
-                            <Spinner />
-                            Waiting for host to start Game!
-                        </div>
+                        roomData.host === user.name ?
+                            <div className="flex flex-col items-center w-full h-full">
+                                <Leaderboards />
+                                <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl md:text-4xl font-semibold shadow-md focus:outline-none rounded-l my-4" onClick={startGame}>
+                                    Restart game
+                                </button>
+                            </div>
+                            :
+                            <div className="flex flex-col items-center w-full h-full">
+                                <Leaderboards />
+                            </div>
                 }
             </div>
             :
-            <div className="flex flex-col p-2 m-5 mt-0 h-full bg-white rounded-2xl">
+            <div className="flex flex-col p-2 m-5 mt-0 h-full bg-white rounded-2xl min-h-[75vh] md:min-h-0 md:h-full">
                 <Scores />
                 <Question />
                 <Answers />

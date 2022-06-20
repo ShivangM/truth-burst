@@ -17,7 +17,9 @@ const User = require('./models/UserModel');
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000"]
+    origin: ["https://truth-burst.netlify.app"],
+    // origin: ["http://localhost:3000"],
+    methods: ["GET", "POST"]
   }
 });
 
@@ -120,13 +122,13 @@ io.on('connection', (socket) => {
     let error = false;
     if (round === 0) {
       const currUsers = await getUsersInRoom(room)
-      io.to(room).emit('leaderboard', currUsers)
+      io.to(room).emit('leaderboards', currUsers)
       io.to(room).emit('setRound', round)
-      await User.updateMany({ score: 0 })
+      await User.updateMany({ score: 0 }).exec()
     }
     else {
-      await Answer.deleteMany({ room: room })
-      await Vote.deleteMany({ room: room })
+      await Answer.deleteMany({ room: room }).exec()
+      await Vote.deleteMany({ room: room }).exec()
       io.to(room).emit('setRound', round)
       socket.broadcast.to(room).emit('message', { userName: 'Game Room', text: `Starting Round ${round}` });
       const currUsers = await getUsersInRoom(room)

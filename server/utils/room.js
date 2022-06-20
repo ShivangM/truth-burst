@@ -1,14 +1,19 @@
 const Room = require("../models/RoomModel")
+const Vote = require("../models/VoteModel")
 const { getUsersInRoom } = require("./users")
 
 const getRoomData = async (roomCode, name)=>{
     const room = await Room.findOne({code: roomCode}).exec()
     if(name === room.host){
         const activeUsers = await getUsersInRoom(roomCode)
-        activeUsers.length > 0?
-        await Room.findByIdAndUpdate(room._id, {host: activeUsers[0].name})
-        :
-        await Room.findByIdAndDelete(room._id)
+        if (activeUsers.length > 0) {
+            await Room.findByIdAndUpdate(room._id, {host: activeUsers[0].name}).exec()
+        }
+        else{
+            await Room.findByIdAndDelete(room._id)
+            await Vote.deleteMany({room: roomCode}).exec()
+        }
+        
     }
     
     return await Room.findOne({code: roomCode}).exec()

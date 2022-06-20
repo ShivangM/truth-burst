@@ -74,7 +74,7 @@ function Room() {
         <div className="flex flex-col w-full md:w-3/4 md:h-screen min-h-screen">
           <div className="flex flex-col md:flex-row justify-between m-5 h-fit items-center bg-[#FF5D5D] rounded-2xl">
             <a href='/' className='font-semibold text-white pt-4 md:p-4 md:m-4 text-2xl'>Truth Burst</a>
-            <div className="bg-white rounded-xl w-3/4 md:w-fit md:h-fit p-4 m-4 flex items-center justify-around">
+            <div className="bg-white rounded-xl w-3/4 md:w-fit h-fit p-4 m-4 flex items-center justify-around">
               <p className='whitespace-nowrap px-2'>Room Code: <b className='font-semibold'>{room}</b></p>
               <TbClipboardText className='text-xl cursor-pointer' onClick={copyRoomCode} />
             </div>

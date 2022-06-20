@@ -11,12 +11,12 @@ function Chat(props) {
 
     return (
         message.userName === user.name ?
-            <div className={currentUser} key={props.key}>
+            <div className={currentUser}>
                 <div className="font-medium">{message.userName}</div>
                 <p>{ReactEmoji.emojify(message.text)}</p>
             </div>
             :
-            <div className={otherUsers} key={props.key}>
+            <div className={otherUsers}>
                 <div className="font-medium">{message.userName}</div>
                 <p>{ReactEmoji.emojify(message.text)}</p>
             </div>
