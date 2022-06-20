@@ -4,8 +4,8 @@ import { userActions } from '../store/userSlice';
 import { useNavigate } from 'react-router-dom'
 import { roomActions } from '../store/roomSlice';
 const { io } = require("socket.io-client");
-// const ENDPOINT = "https://truth-burst.herokuapp.com/"
-const ENDPOINT = "http://localhost:5000"
+const ENDPOINT = "https://truth-burst.herokuapp.com/"
+// const ENDPOINT = "http://localhost:5000"
 
 function Home() {
   const [socket, setSocket] = useState(null);

@@ -17,8 +17,8 @@ const User = require('./models/UserModel');
 
 const io = new Server(server, {
   cors: {
-    // origin: ["https://truth-burst.netlify.app"],
-    origin: ["http://localhost:3000"],
+    origin: ["https://truth-burst.netlify.app"],
+    // origin: ["http://localhost:3000"],
     methods: ["GET", "POST"]
   }
 });
