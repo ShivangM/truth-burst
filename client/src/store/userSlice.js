@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 
 const userSlice = createSlice({
     name: "user",
-    initialState: { user: {name: "", room: "", id: "" }, activeUsers: [], socket: {} },
+    initialState: { user: {name: "", room: "", id: "" }, activeUsers: [], socket: {}, selected: "", disabled: false},
     reducers: {
         setUser(state, action){
             state.user = action.payload
@@ -12,7 +12,13 @@ const userSlice = createSlice({
         },
         setSocket(state, action){
             state.socket = action.payload
-        }
+        },
+        setSelected(state, action){
+            state.selected = action.payload
+        },
+        setDisabled(state, action){
+            state.disabled = action.payload
+        },
     }
 })
 

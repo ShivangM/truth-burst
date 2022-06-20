@@ -1,24 +1,19 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose
 
-const UserSchema = new Schema({
-    name: {
+const VoteSchema = new Schema({
+    selected: {
         type: String,
         required: true,
+    },
+    voter: {
+        type: String,
+        required: true,
+        unique: true
     },
     room: {
         type: String,
         required: true,
-    },
-    socketID: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    score: {
-        type: Number,
-        required: true,
-        default: 0
     },
     date: {
         type: Date,
@@ -26,5 +21,5 @@ const UserSchema = new Schema({
     }
 });
 
-const User = mongoose.model("users", UserSchema);
-module.exports = User;
+const Vote = mongoose.model("votes", VoteSchema);
+module.exports = Vote;

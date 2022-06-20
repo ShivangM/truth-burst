@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
+import ReactEmoji from 'react-emoji';
 
 function Chat(props) {
     const user = useSelector(state => state.user.user)
@@ -10,14 +11,14 @@ function Chat(props) {
 
     return (
         message.userName === user.name ?
-            <div className={currentUser}>
+            <div className={currentUser} key={props.key}>
                 <div className="font-medium">{message.userName}</div>
-                <p>{message.text}</p>
+                <p>{ReactEmoji.emojify(message.text)}</p>
             </div>
             :
-            <div className={otherUsers}>
+            <div className={otherUsers} key={props.key}>
                 <div className="font-medium">{message.userName}</div>
-                <p>{message.text}</p>
+                <p>{ReactEmoji.emojify(message.text)}</p>
             </div>
     )
 }

@@ -7,11 +7,12 @@ import { TbClipboardText } from 'react-icons/tb'
 import Game from './Game';
 import { userActions } from '../store/userSlice';
 import { messageActions } from '../store/messageSlice';
+import { roomActions } from '../store/roomSlice';
 
 function Room() {
   const user = useSelector(state => state.user.user)
   const socket = useSelector(state => state.user.socket)
-  const { name, room, id } = user
+  const { room } = user
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -20,27 +21,47 @@ function Room() {
   }, [room]);
 
   useEffect(() => {
-    if(socket){
-
+    if (socket) {
       socket.on('message', message => {
         dispatch(messageActions.setMessage(message))
       });
-      
-      socket.on("roomData", ({ users }) => {
+
+      socket.on("roomData", ({ users, roomData }) => {
         dispatch(userActions.setActiveUser(users))
+        dispatch(roomActions.setRoomData(roomData))
+      });
+
+      socket.on('question', question => {
+        dispatch(roomActions.setQuestion(question))
+      });
+
+      socket.on('answers', answers => {
+        dispatch(roomActions.setAnswers(answers))
+      });
+
+      socket.on('votes', votes => {
+        dispatch(roomActions.setVotes(votes))
+      });
+
+      socket.on('clearData', users => {
+        dispatch(roomActions.setAnswers([]))
+        dispatch(roomActions.setVotes([]))
+        dispatch(userActions.setActiveUser(users))
+        dispatch(userActions.setSelected(""))
+        dispatch(userActions.setDisabled(false))
       });
     }
   }, []);
 
-  const copyRoomCode = () => {
-    navigator.clipboard.writeText(room)
-    // alert(`Copied to Clipboard`)
+  const copyRoomCode = async () => {
+    await navigator.clipboard.writeText(room)
+    alert(`Copied to Clipboard`)
   }
 
   return (
     <div className='flex flex-col md:flex-row'>
 
-      <div className="flex flex-col w-full md:w-3/4 h-screen">
+      <div className="flex flex-col w-full md:w-3/4 md:h-screen min-h-screen">
         <div className="flex flex-col md:flex-row justify-between m-5 h-fit items-center bg-[#FF5D5D] rounded-2xl">
           <h1 className='font-semibold text-white pt-4 md:p-4 md:m-4 text-2xl'>Truth Burst</h1>
           <div className="bg-white rounded-xl w-3/4 md:w-fit md:h-fit p-4 m-4 flex items-center justify-around">

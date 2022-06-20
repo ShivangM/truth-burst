@@ -1,8 +1,8 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Chat from './Chat'
 import { AiOutlineSend } from 'react-icons/ai';
-import { messageActions } from '../store/messageSlice';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 function ChatBox() {
   const messages = useSelector(state => state.messages.messages)
@@ -11,6 +11,7 @@ function ChatBox() {
 
   const sendMessage = ()=>{
     const text = document.getElementById("message").value
+
     const message = {
       room: user.room,
       text: text,
@@ -23,7 +24,7 @@ function ChatBox() {
 
   return (
     <div className='h-full w-full p-2 bg-[#FFC3C3] rounded-2xl flex flex-col'>
-      <div className="h-5/6 overflow-y-scroll">
+      <ScrollToBottom className="h-5/6">
         {
           messages ?
             messages.map((value, index) => {
@@ -33,9 +34,10 @@ function ChatBox() {
             }) :
             null
         }
-      </div>
+      </ScrollToBottom>
       <div className="h-1/6 p-2 w-full flex justify-between items-center">
-        <input type="text" className='w-5/6 px-5 py-3 rounded-2xl' placeholder='Enter Your Message' id='message'/>
+        <input type="text" className='w-5/6 px-5 py-3 rounded-2xl' placeholder='Enter Your Message' id='message' 
+        onKeyPress={event => event.key === 'Enter' ? sendMessage() : null}/>
         <AiOutlineSend onClick={sendMessage} className="w-1/6 text-xl cursor-pointer"/>
       </div>
     </div>

@@ -6,9 +6,14 @@ const { Server } = require("socket.io");
 const cors = require('cors');
 const connectToMongo = require("./db")
 
-const router = require("./router")
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./users');
+const router = require("./utils/router")
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
 const Room = require('./models/RoomModel');
+const { getRoomData } = require('./utils/room');
+const Question = require('./models/QuestionModel');
+const Answer = require('./models/AnswerModel');
+const Vote = require('./models/VoteModel');
+const User = require('./models/UserModel');
 
 const io = new Server(server, {
   cors: {
@@ -23,12 +28,31 @@ connectToMongo()
 //Configure Enviournment Variables
 require('dotenv').config()
 const PORT = process.env.PORT || 5000
+const NAME_REPLACER = process.env.NAME_REPLACER
+
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
 
 io.on('connection', (socket) => {
 
-  socket.on('createRoom', async ({ host, code }, callback) => {
+  socket.on('createRoom', async ({ host, code, rounds }, callback) => {
     try {
-      const newRoom = new Room({host, code})
+      const newRoom = new Room({ host, code, rounds })
       await newRoom.save()
     } catch (error) {
       return callback("An Error has Occured");
@@ -37,28 +61,112 @@ io.on('connection', (socket) => {
   });
 
   socket.on('join', async ({ name, room }, callback) => {
-    const { error } = await addUser({ id: socket.id, name, room });
-    if (error) return callback("An Error has Occured");
-    socket.join(room);
+    const existingRoom = await Room.findOne({ code: room })
+    if (!existingRoom) return callback("Please join with valid room code")
+    const {error} = await addUser({ id: socket.id, name, room });
+    if (error) return callback(error);
 
+    socket.join(room);
     socket.broadcast.to(room).emit('message', { userName: 'Game Room', text: `${name} joined the room!` });
-    io.to(room).emit('roomData', { room: room, users: await getUsersInRoom(room) });
+
+    const roomData = await getRoomData(room, name)
+    const users = await getUsersInRoom(room)
+    io.to(room).emit('roomData', { roomData, users });
     callback();
   });
 
   socket.on('sendMessage', (message, callback) => {
     let error = false;
     io.to(message.room).emit('message', message);
-    if(error) callback();
+    if (error) callback();
   });
 
-  socket.on('disconnect', () => {
-    const user = getUser(socket.id);
+  socket.on('sendAnswer', async (answer, callback) => {
+    const { user, text } = answer
+    const ans = new Answer({
+      text: text,
+      name: user.name,
+      room: user.room,
+    })
 
-    if(user) {
+    try {
+      await ans.save()
+    } catch (error) {
+      callback()
+    }
+
+    const currUsers = await getUsersInRoom(user.room)
+    const currAnswers = await Answer.find({ room: user.room })
+
+    currUsers.length === currAnswers.length ?
+      io.to(user.room).emit('answers', shuffle(currAnswers)) : null
+  });
+
+  socket.on('changeRound', async ({ round, room }, callback) => {
+    let error = false;
+    if (round === 0) {
+      const currUsers = await getUsersInRoom(room)
+      io.to(room).emit('leaderboard', currUsers)
+      io.to(room).emit('setRound', round)
+      await User.updateMany({ score: 0 })
+    }
+    else {
+      await Answer.deleteMany({ room: room })
+      await Vote.deleteMany({ room: room })
+      io.to(room).emit('setRound', round)
+      socket.broadcast.to(room).emit('message', { userName: 'Game Room', text: `Starting Round ${round}` });
+      const currUsers = await getUsersInRoom(room)
+      io.to(room).emit('clearData', currUsers)
+    }
+    if (error) callback();
+  });
+
+  socket.on('vote', async ({ selected, voter, room }, callback) => {
+    const vote = new Vote({
+      selected: selected,
+      voter: voter,
+      room: room
+    })
+
+    try {
+      await vote.save()
+    } catch (error) {
+      callback();
+    }
+
+    await User.findOneAndUpdate({ name: selected }, { $inc: { score: 100 } })
+
+    const currUsers = await getUsersInRoom(room)
+    const currVotes = await Vote.find({ room: room })
+    currUsers.length === currVotes.length ?
+      io.to(room).emit('votes', currVotes) : null
+  });
+
+  socket.on('generateQuestion', async (room, callback) => {
+    let error = false;
+    const questions = await Question.find()
+    let randomQuestion = questions[Math.floor(Math.random() * questions.length)].question
+    const users = await getUsersInRoom(room)
+    const randomUser = users[Math.floor(Math.random() * users.length)].name
+
+    randomQuestion = randomQuestion.replaceAll(NAME_REPLACER, randomUser)
+
+    io.to(room).emit('question', randomQuestion);
+
+    if (error) callback();
+  });
+
+  socket.on('disconnect', async () => {
+    const user = await getUser(socket.id);
+    if (user) {
       removeUser(socket.id)
       io.to(user.room).emit('message', { user: 'Game Room', text: `${user.name} has left.` });
-      io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
+      io.to(user.room).emit('roomData', { roomData: await getRoomData(user.room, user.name), users: await getUsersInRoom(user.room) });
+      try {
+        await Answer.findOneAndDelete({ $and: [{ name: user.name }, { room: user.room }] }).exec()
+      } catch (error) {
+
+      }
     }
   })
 
