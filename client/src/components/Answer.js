@@ -35,35 +35,35 @@ function Answer(props) {
         votes.length > 0 ?
             answer.name === user.name ?
                 <div className={currentUser} key={props.key}>
-                    <p><b className='font-semibold'>{answer.name}:</b> {ReactEmoji.emojify(answer.text)}</p>
+                    <p className='flex'><b className='font-semibold'>{answer.name}:</b> <p className='flex break-words pl-1'>{ReactEmoji.emojify(answer.text)}</p></p>
                     <p><b className='font-semibold'>Vote Count:</b> {votesOnAnswer.length}</p>
                     <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p>
                 </div>
                 :
                 <div className={otherUsersDiv} key={props.key}>
-                    <p><b className='font-semibold'>{answer.name}:</b> {ReactEmoji.emojify(answer.text)}</p>
+                    <p className='flex'><b className='font-semibold'>{answer.name}:</b> <p className='flex break-words pl-1'>{ReactEmoji.emojify(answer.text)}</p></p>
                     <p><b className='font-semibold'>Vote Count:</b> {votesOnAnswer.length}</p>
                     <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p>
                 </div>
             :
             answer.name === user.name ?
-                <button type='button felx' disabled className={currentUser} key={props.key}>
-                    {ReactEmoji.emojify(answer.text)}
+                <button type='button' disabled className={currentUser} key={props.key}>
+                    <p className='break-words flex'>{ReactEmoji.emojify(answer.text)}</p>
                 </button>
                 :
-                selected === ""?
-                    <button type='button felx' className={otherUsers} key={props.key} onClick={() => { vote(answer.name) }}>
-                        {ReactEmoji.emojify(answer.text)}
+                selected === "" ?
+                    <button type='button' className={otherUsers} key={props.key} onClick={() => { vote(answer.name) }}>
+                        <p className='break-words flex'>{ReactEmoji.emojify(answer.text)}</p>
                     </button>
                     :
-                    selected === answer.name?
-                    <div disabled className={selectedClass} key={props.key}>
-                        {ReactEmoji.emojify(answer.text)}
-                    </div>
-                    :
-                    <div disabled className={otherUsersAnswerDiv} key={props.key}>
-                        {ReactEmoji.emojify(answer.text)}
-                    </div>
+                    selected === answer.name ?
+                        <div disabled className={selectedClass} key={props.key}>
+                            <p className='break-words flex'>{ReactEmoji.emojify(answer.text)}</p>
+                        </div>
+                        :
+                        <div disabled className={otherUsersAnswerDiv} key={props.key}>
+                            <p className='break-words flex'>{ReactEmoji.emojify(answer.text)}</p>
+                        </div>
     )
 }
 

@@ -10,6 +10,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.break-words img{
+  margin: 0 0.125rem;
+}
+
 .dot-pulse {
   position: relative;
   left: -9999px;

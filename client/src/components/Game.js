@@ -50,7 +50,7 @@ function Game() {
 
     return (
         roundNumber === 0 ?
-            <div className="flex flex-col justify-center items-center p-2 m-5 mt-0 bg-white rounded-2xl min-h-[75vh] md:min-h-0 md:h-full">
+            <div className="flex flex-col items-center p-2 m-5 mt-0 bg-white rounded-2xl min-h-[75vh] md:min-h-0 md:h-full">
                 {
                     leaderboards.length === 0 ?
                         roomData.host === user.name ?
