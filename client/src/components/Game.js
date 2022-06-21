@@ -54,13 +54,11 @@ function Game() {
                 {
                     leaderboards.length === 0 ?
                         roomData.host === user.name ?
-                            <div className="flex flex-col justify-center items-center h-full">
-                                <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl md:text-4xl font-semibold shadow-md focus:outline-none rounded-lg" onClick={startGame}>
-                                    Start game
-                                </button>
-                            </div>
+                            <button type="button" className="py-2 px-6 bg-[#FF5D5D] my-auto hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl font-semibold shadow-md focus:outline-none rounded-lg" onClick={startGame}>
+                                Start game
+                            </button>
                             :
-                            <div className="flex flex-col justify-center items-center h-full">
+                            <div className="flex flex-col my-auto justify-center items-center h-full">
                                 <Spinner />
                                 Waiting for host to start Game!
                             </div>
@@ -68,7 +66,7 @@ function Game() {
                         roomData.host === user.name ?
                             <div className="flex flex-col items-center w-full h-full">
                                 <Leaderboards />
-                                <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl md:text-4xl font-semibold shadow-md focus:outline-none rounded-l my-4" onClick={startGame}>
+                                <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl font-semibold shadow-md focus:outline-none rounded-l my-4" onClick={startGame}>
                                     Restart game
                                 </button>
                             </div>

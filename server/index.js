@@ -129,7 +129,7 @@ io.on('connection', (socket) => {
   socket.on('changeRound', async ({ round, room }, callback) => {
     let error = false;
     if (round === 0) {
-      const currUsers = await User.find({room: room}).sort({socre: 1})
+      const currUsers = await User.find({room: room}).sort({score: -1})
       io.to(room).emit('leaderboards', currUsers)
       io.to(room).emit('setRound', round)
       await User.updateMany({ score: 0 }).exec()
