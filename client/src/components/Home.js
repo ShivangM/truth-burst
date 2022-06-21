@@ -25,15 +25,15 @@ function Home() {
   }
 
   useEffect(() => {
-    const getSocket = async () => {
+    const getSocket = () => {
       if (socket === null) {
-        const socketTmp = await io(ENDPOINT)
+        const socketTmp = io(ENDPOINT)
         setSocket(socketTmp)
         dispatch(userActions.setSocket(socketTmp))
       }
     }
     getSocket()
-  }, [socket]);
+  }, [socket, dispatch]);
 
   const createRoom = async () => {
     const name = document.getElementById("name").value
