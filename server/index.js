@@ -4,12 +4,19 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const cors = require('cors');
-const connectToMongo = require("./db")
+//response as Json
+app.use(express.json()); 
+//Parse x-www-form-urlencoded request into req.body
+app.use(express.urlencoded({ extended: true }));  
 
+// Utils 
 const router = require("./utils/router")
+const connectToMongo = require("./db")
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
-const Room = require('./models/RoomModel');
 const { getRoomData } = require('./utils/room');
+
+// Models 
+const Room = require('./models/RoomModel');
 const Question = require('./models/QuestionModel');
 const Answer = require('./models/AnswerModel');
 const Vote = require('./models/VoteModel');
@@ -17,8 +24,7 @@ const User = require('./models/UserModel');
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://truth-burst.netlify.app"],
-    // origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://www.truthburst.live", "https://truth-burst.netlify.app"],
     methods: ["GET", "POST"]
   }
 });
@@ -52,6 +58,7 @@ function shuffle(array) {
 
 io.on('connection', (socket) => {
 
+  // Creates Room 
   socket.on('createRoom', async ({ host, code, rounds }, callback) => {
     try {
       const newRoom = new Room({ host, code, rounds })
@@ -73,6 +80,7 @@ io.on('connection', (socket) => {
     callback();
   });
 
+  // Join Room 
   socket.on('join', async ({ name, room }, callback) => {
     const existingRoom = await Room.findOne({ code: room }).exec()
     if (!existingRoom) return callback("Please join with valid room code")
@@ -130,7 +138,7 @@ io.on('connection', (socket) => {
       await Answer.deleteMany({ room: room }).exec()
       await Vote.deleteMany({ room: room }).exec()
       io.to(room).emit('setRound', round)
-      socket.broadcast.to(room).emit('message', { userName: 'Game Room', text: `Starting Round ${round}` });
+      io.to(room).emit('message', { userName: 'Game Room', text: `Starting Round ${round}` });
       const currUsers = await getUsersInRoom(room)
       io.to(room).emit('clearData', currUsers)
     }
@@ -153,7 +161,7 @@ io.on('connection', (socket) => {
     await User.findOneAndUpdate({ name: selected }, { $inc: { score: 100 } })
 
     const currUsers = await getUsersInRoom(room)
-    const currVotes = await Vote.find({ room: room })
+    const currVotes = await Vote.find({ room: room }).exec()
     currUsers.length === currVotes.length ?
       io.to(room).emit('votes', currVotes) : null
   });
@@ -174,6 +182,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', async () => {
     const user = await getUser(socket.id);
+    
     if (user) {
       removeUser(socket.id)
       io.to(user.room).emit('message', { user: 'Game Room', text: `${user.name} has left.` });
