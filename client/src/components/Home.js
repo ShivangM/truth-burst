@@ -56,7 +56,7 @@ function Home() {
       else {
         setTimeout(() => {
           dispatch(roomActions.setLoading(false))
-        }, 1400);
+        }, 2000);
       }
     });
     navigate(`/room/${room}`)
@@ -78,7 +78,7 @@ function Home() {
       else {
         setTimeout(() => {
           dispatch(roomActions.setLoading(false))
-        }, 1400);
+        }, 2000);
       }
     });
 
