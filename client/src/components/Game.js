@@ -39,14 +39,16 @@ function Game() {
     }
 
     useEffect(() => {
-        socket.on('setRound', roundNumber => {
-            dispatch(roomActions.setRoundNumber(roundNumber))
-        })
+        if (socket) {
+            socket.on('setRound', roundNumber => {
+                dispatch(roomActions.setRoundNumber(roundNumber))
+            })
 
-        socket.on('leaderboards', leaderboards => {
-            dispatch(roomActions.setLeaderboards(leaderboards))
-        })
-    }, [roundNumber]);
+            socket.on('leaderboards', leaderboards => {
+                dispatch(roomActions.setLeaderboards(leaderboards))
+            })
+        }
+    }, [roundNumber, dispatch, socket]);
 
     return (
         roundNumber === 0 ?

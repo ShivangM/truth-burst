@@ -14,6 +14,7 @@ const router = require("./utils/router")
 const connectToMongo = require("./db")
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
 const { getRoomData } = require('./utils/room');
+const {shuffle, generateRoomCode} = require("./utils/utilityFunctions")
 
 // Models 
 const Room = require('./models/RoomModel');
@@ -25,7 +26,8 @@ const User = require('./models/UserModel');
 const io = new Server(server, {
   cors: {
     origin: ["http://localhost:3000", "https://www.truthburst.live", "https://truth-burst.netlify.app"],
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -38,65 +40,50 @@ require('dotenv').config()
 const PORT = process.env.PORT || 5000
 const NAME_REPLACER = process.env.NAME_REPLACER
 
-function shuffle(array) {
-  let currentIndex = array.length, randomIndex;
-
-  // While there remain elements to shuffle.
-  while (currentIndex != 0) {
-
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
-
-  return array;
-}
-
 io.on('connection', (socket) => {
 
   // Creates Room 
-  socket.on('createRoom', async ({ host, code, rounds }, callback) => {
+  socket.on('createRoom', async ({ host, rounds }, callback) => {
     try {
+      const code = generateRoomCode()
       const newRoom = new Room({ host, code, rounds })
       await newRoom.save()
 
       const { error } = await addUser({ id: socket.id, name: host, room: code });
-      if (error) return callback(error);
+      if (error) return callback({error});
       await socket.join(code);
 
       const roomData = await getRoomData(code, host)
       const users = await getUsersInRoom(code)
+      const user = {name: host, room: code, id: socket.id}
 
       io.to(code).emit('roomData', roomData);
       io.to(code).emit('users', users);
+      callback({user, users, roomData});
 
     } catch (error) {
-      return callback("An Error has Occured");
+      return callback({error: "An Error has Occured"});
     }
-    callback();
   });
 
   // Join Room 
   socket.on('join', async ({ name, room }, callback) => {
     const existingRoom = await Room.findOne({ code: room }).exec()
-    if (!existingRoom) return callback("Please join with valid room code")
+    if (!existingRoom) return callback({error: "Please join with valid room code"})
     const { error } = await addUser({ id: socket.id, name, room });
-    if (error) return callback(error);
+    if (error) return callback({error});
 
     await socket.join(room);
     socket.broadcast.to(room).emit('message', { userName: 'Game Room', text: `${name} joined the room!` });
 
     const roomData = await getRoomData(room, name)
     const users = await getUsersInRoom(room)
+    const user = {name, room, id: socket.id}
 
     io.to(room).emit('roomData', roomData);
     io.to(room).emit('users', users);
 
-    callback();
+    callback({user, users, roomData});
   });
 
   socket.on('sendMessage', (message, callback) => {

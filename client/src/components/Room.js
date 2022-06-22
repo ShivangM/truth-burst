@@ -9,18 +9,17 @@ import Game from './Game';
 import { userActions } from '../store/userSlice';
 import { messageActions } from '../store/messageSlice';
 import { roomActions } from '../store/roomSlice';
-import LoadingScreen from './LoadingScreen';
 
 function Room() {
   const user = useSelector(state => state.user.user)
   const socket = useSelector(state => state.user.socket)
-  const { room } = user
+  const room = user.room
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   useEffect(() => {
     if (room === "") navigate("/")
-  }, [room]);
+  }, [room, navigate]);
 
 
   useEffect(() => {
@@ -58,7 +57,7 @@ function Room() {
         document.getElementById("answer").value = ""
       });
     }
-  }, []);
+  });
 
   const [copied, setCopied] = useState(false);
 
@@ -71,36 +70,31 @@ function Room() {
     }, 1000);
   }
 
-  const loading = useSelector(state => state.room.loading)
-
   return (
-    loading ?
-      <LoadingScreen />
-      :
-      <div className='flex flex-col md:flex-row'>
-        <div className="flex flex-col w-full md:w-3/4 md:h-screen min-h-screen">
-          <div className="flex flex-col md:flex-row justify-between m-5 h-fit items-center bg-[#FF8C8C] rounded-2xl">
-            <a href='/' className='font-semibold text-white pt-4 md:p-4 md:m-4 text-2xl'>Truth Burst</a>
-            <div className="bg-white rounded-xl w-3/4 md:w-fit h-fit p-4 m-4 flex items-center justify-around">
-              <p className='whitespace-nowrap px-2'>Room Code: <b className='font-semibold'>{room}</b></p>
-              {!copied ?
-                <TbClipboardText className='text-xl cursor-pointer' onClick={copyRoomCode} />
-                : <ImClipboard />
-              }
-            </div>
+    <div className='flex flex-col md:flex-row'>
+      <div className="flex flex-col w-full md:w-3/4 md:h-screen min-h-screen">
+        <div className="flex flex-col md:flex-row justify-between m-5 h-fit items-center bg-[#FF8C8C] rounded-2xl">
+          <a href='/' className='font-semibold text-white pt-4 md:p-4 md:m-4 text-2xl'>Truth Burst</a>
+          <div className="bg-white rounded-xl w-3/4 md:w-fit h-fit p-4 m-4 flex items-center justify-around">
+            <p className='whitespace-nowrap px-2'>Room Code: <b className='font-semibold'>{room}</b></p>
+            {!copied ?
+              <TbClipboardText className='text-xl cursor-pointer' onClick={copyRoomCode} />
+              : <ImClipboard />
+            }
           </div>
-          <Game />
         </div>
+        <Game />
+      </div>
 
-        <div className="h-screen w-full md:w-1/4">
-          <div className="h-1/3 md:h-1/4 p-5 pb-0">
-            <UserOnline />
-          </div>
-          <div className="h-2/3 md:h-3/4 p-5">
-            <ChatBox />
-          </div>
+      <div className="h-screen w-full md:w-1/4">
+        <div className="h-1/3 md:h-1/4 p-5 pb-0">
+          <UserOnline />
+        </div>
+        <div className="h-2/3 md:h-3/4 p-5">
+          <ChatBox />
         </div>
       </div>
+    </div>
   )
 }
 
