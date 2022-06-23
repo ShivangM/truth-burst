@@ -5,7 +5,7 @@ import {AiFillMail} from 'react-icons/ai'
 export default function Newsletter() {
 
     const [email, setEmail] = useState("");
-    const ENDPOINT = (process.env.REACT_APP_ENDPOINT || "http://localhost:5000") + "/newsletter"
+    const ENDPOINT = (process.env.REACT_APP_ENDPOINT || "http://localhost:5000") + "newsletter"
 
     const handleSubmit = async ()=>{
         const res = await axios.post(ENDPOINT, {email})

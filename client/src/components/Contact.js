@@ -2,7 +2,7 @@ import React from 'react'
 import axios from 'axios'
 
 function Contact() {
-    const ENDPOINT = (process.env.REACT_APP_ENDPOINT || "http://localhost:5000") + "/contact"
+    const ENDPOINT = (process.env.REACT_APP_ENDPOINT || "http://localhost:5000") + "contact"
 
     const handleSubmit = async (e) => {
         e.preventDefault()
