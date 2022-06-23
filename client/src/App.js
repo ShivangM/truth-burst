@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import Home from './components/Home';
 import Room from './components/Room';
+import TaC from './components/TAC';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/room" element={<Room />}/>
+          <Route exact path="/tnc" element={<TaC />}/>
         </Routes>
       </BrowserRouter>
     </div>
