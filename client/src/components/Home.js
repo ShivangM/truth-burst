@@ -43,9 +43,11 @@ function Home() {
           </div>
         </main>
 
-        <Newsletter/>
-        <Contact/>
-        <Footer/>
+        <section className='min-h-screen w-full'>
+          <Newsletter />
+          <Contact />
+          <Footer />
+        </section>
       </>
   )
 }

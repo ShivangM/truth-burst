@@ -1,6 +1,5 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { roomActions } from '../store/roomSlice';
+import { useSelector } from 'react-redux';
 
 function Question() {
     const roundNumber = useSelector(state => state.room.roundNumber)

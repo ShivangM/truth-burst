@@ -26,10 +26,10 @@ router.post("/add-question",
     try {
       await question.save()
     } catch (error) {
-      res.send({ response: "Some error occured" }).status(500);
+      return res.status(500).send({ response: "Some error occured" })
     }
 
-    res.send({ response: "Question Added" }).status(200);
+    return res.status(200).send({ response: "Question Added" })
   });
 
 // Contact
@@ -58,10 +58,10 @@ router.post("/contact",
     try {
       await contact.save()
     } catch (error) {
-      res.send({ response: "Some error occured" }).status(500);
+      return res.status(500).send({ response: "Some error occured" })
     }
 
-    res.send({ response: "Message sent" }).status(200);
+    return res.status(200).send({ response: "Message sent" })
   });
 
 // Add to Newsletters 
@@ -81,10 +81,10 @@ router.post("/newsletter",
 
       await newsletter.save()
     } catch (error) {
-      res.send({ response: "User already registered to newletters" }).status(500);
+      return res.status(400).send({ response: "User already registered to newletters" });
     }
 
-    res.send({ response: "Email Added to Newsletters" }).status(200);
+    return res.status(200).send({ response: "Email Added to Newsletters" });
   });
 
 // Unsubscribe to Newletters 
@@ -99,10 +99,10 @@ router.delete("/newsletter",
 
     try {
       const del = await Newsletter.findOneAndDelete({email: req.body.email}).exec()
-      del? res.send({ response: "Email removed from newsletters" }).status(200)
-      : res.send({ response: "User not registered to newletters" }).status(400);
+      return del? res.status(200).send({ response: "Email removed from newsletters" })
+      : res.status(400).send({ response: "User not registered to newletters" })
     } catch (error) {
-      res.send({ response: "Some Error Occured" }).status(500);
+      return res.status(500).send({ response: "Some Error Occured" })
     }
   });
 
