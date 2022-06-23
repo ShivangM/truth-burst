@@ -21,8 +21,8 @@ export default function Newsletter() {
                         <h1 className="font-bold text-5xl text-gray-800">Newsletter</h1>
                         <p className="pt-8 md:pt-4 text-gray-800">Sign up for our newsletter to get latest updates about the game! you can unsubscribe anytime from the bottom of our mail</p>
                         <div className="mt-8 md:flex justify-start md:gap-4">
-                            <input type="email" placeholder="Your Email" className="placeholder-gray-600 w-full md:w-1/2 p-4 grid place-items-center border rounded-md focus:outline-none" onChange={e=>setEmail(e.target.value)} value={email}/>
-                            <button className="w-full md:w-auto bg-[#FF5D5D] text-white px-8 py-4 border rounded-md hover:bg-[#fc5656] grid place-items-center font-semibold mt-4 md:mt-0 focus:outline-none" onClick={handleSubmit}>Subscribe</button>
+                            <input type="email" placeholder="Your Email" className="placeholder-gray-600 w-full md:w-1/2 p-4 grid place-items-center rounded-md focus:outline-none" onChange={e=>setEmail(e.target.value)} value={email}/>
+                            <button className="w-full md:w-auto bg-[#FF5D5D] text-white px-8 py-4 rounded-md hover:bg-[#fc5656] grid place-items-center font-semibold mt-4 md:mt-0 focus:outline-none" onClick={handleSubmit}>Subscribe</button>
                         </div>
                         <p className="pt-4 text-xs text-gray-800">Read our <a href="/tnc" className="cursor-pointer no-underline hover:underline">privacy policy</a></p>
                     </div>
