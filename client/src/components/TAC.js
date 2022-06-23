@@ -15,7 +15,7 @@ const TaC = () => {
                 <meta name="author" content="Shivang Mishra" />
             </Helmet>
 
-            <main className="flex flex-col justify-center items-center lg:max-w-screen-md mx-auto">
+            <main className="flex flex-col w-5/6 justify-center items-center lg:max-w-screen-md mx-auto">
                 <h1 className="text-center text-white text-4xl my-4 mt-8">
                     Terms and Conditions
                 </h1>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from 'axios'
 import {AiFillMail} from 'react-icons/ai'
+import { Link } from "react-router-dom";
 
 export default function Newsletter() {
 
@@ -24,7 +25,7 @@ export default function Newsletter() {
                             <input type="email" placeholder="Your Email" className="placeholder-gray-600 w-full md:w-1/2 p-4 grid place-items-center rounded-md focus:outline-none" onChange={e=>setEmail(e.target.value)} value={email}/>
                             <button className="w-full md:w-auto bg-[#FF5D5D] text-white px-8 py-4 rounded-md hover:bg-[#fc5656] grid place-items-center font-semibold mt-4 md:mt-0 focus:outline-none" onClick={handleSubmit}>Subscribe</button>
                         </div>
-                        <p className="pt-4 text-xs text-gray-800">Read our <a href="/tnc" className="cursor-pointer no-underline hover:underline">privacy policy</a></p>
+                        <p className="pt-4 text-xs text-gray-800">Read our <Link to="/tnc" className="cursor-pointer no-underline hover:underline">privacy policy</Link></p>
                     </div>
                     <div className="pt-8 lg:pt-0">
                         <AiFillMail className="text-[20rem] text-[#FF5D5D] text-center w-full"/>
