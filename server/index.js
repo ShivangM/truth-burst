@@ -106,12 +106,16 @@ io.on('connection', (socket) => {
       callback()
     }
 
-    const currUsers = await getUsersInRoom(user.room)
-    const currAnswers = await Answer.find({ room: user.room })
+    checkAnswer(user.room)
+  });
+
+  const checkAnswer = async (room) => {
+    const currUsers = await getUsersInRoom(room)
+    const currAnswers = await Answer.find({ room: room })
 
     currUsers.length === currAnswers.length ?
-      io.to(user.room).emit('answers', shuffle(currAnswers)) : null
-  });
+      io.to(room).emit('answers', shuffle(currAnswers)) : null
+  };
 
   socket.on('changeRound', async ({ round, room }, callback) => {
     let error = false;
@@ -178,9 +182,10 @@ io.on('connection', (socket) => {
 
       io.to(user.room).emit('roomData', roomData);
       io.to(user.room).emit('users', users);
-
+      
       try {
         await Answer.findOneAndDelete({ $and: [{ name: user.name }, { room: user.room }] }).exec()
+        checkAnswer(user.room)
       } catch (error) {
 
       }

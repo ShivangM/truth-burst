@@ -56,6 +56,11 @@ function Room() {
         dispatch(userActions.setDisabled(false))
         document.getElementById("answer").value = ""
       });
+
+      socket.on("disconnect", () => {
+        navigate("/")
+        alert("You were disconnected!")
+      });
     }
   });
 

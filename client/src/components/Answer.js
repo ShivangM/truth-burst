@@ -6,11 +6,11 @@ import ReactEmoji from 'react-emoji';
 function Answer(props) {
     const user = useSelector(state => state.user.user)
     const answer = props.answer
-    const currentUser = 'bg-[#FF5D5D] text-white rounded-2xl p-4 m-2 border-none';
+    const currentUser = 'bg-[#FF8C8C] text-white rounded-2xl p-4 m-2 border-none';
     const otherUsers = 'bg-[#FFC3C3] rounded-2xl p-4 m-2 border-none cursor-pointer hover:bg-[#FF8C8C]';
     const otherUsersDiv = 'bg-[#FFC3C3] rounded-2xl p-4 m-2 border-none';
     const otherUsersAnswerDiv = 'bg-[#FFC3C3] rounded-2xl p-4 m-2 border-none text-center';
-    const selectedClass = 'bg-green-400 rounded-2xl p-4 m-2 border-none text-center';
+    const selectedClass = 'bg-[#FF5D5D] rounded-2xl p-4 m-2 border-none text-center';
     const socket = useSelector(state => state.user.socket)
     const votes = useSelector(state => state.room.votes)
     const selected = useSelector(state => state.user.selected)
@@ -28,7 +28,7 @@ function Answer(props) {
     const votesOnAnswer = votes.filter((value) => answer.name === value.selected)
     let voters = ""
     votesOnAnswer.forEach(element => {
-        voters += element.voter + ", "
+        voters += element.voter + " "
     });
 
     return (
