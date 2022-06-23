@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../store/userSlice';
-import back from "../assets/Back.gif"
-import mobile from "../assets/forMobile.gif"
+import back from "../assets/Back.png"
+import mobile from "../assets/Mobile.png"
 import LoadingScreen from './LoadingScreen';
 import CreateRoom from './CreateRoom';
 import JoinRoom from './JoinRoom';

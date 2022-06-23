@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Helmet } from "react-helmet";
+// import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 
 const TaC = () => {
@@ -7,13 +7,13 @@ const TaC = () => {
 
     return (
         <div>
-            <Helmet>
+            {/* <Helmet>
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="theme-color" content="#FF5D5D" />
                 <meta name="description" content="Truth Burst is a online multiplayer game to play with freinds" />
                 <meta name="keywords" content="Truth Burst, truth burst, truth, games, online games, online multiplayer games, multiplayer games, multiplayer party games, party games, multiplayer game, truth burst live, Truth Burst Live, games to play with friends" />
                 <meta name="author" content="Shivang Mishra" />
-            </Helmet>
+            </Helmet> */}
 
             <main className="flex flex-col w-5/6 justify-center items-center lg:max-w-screen-md mx-auto">
                 <h1 className="text-center text-white text-4xl my-4 mt-8">
@@ -51,28 +51,6 @@ const TaC = () => {
                         We respect your privacy and won't share your information
                         with anyone, nor will we send you any unrelated emails.
                     </p>
-                    {/* <p className="mb-4">
-                        We use Mailchimp as our marketing platform. By
-                        subscribing to our newsletter, you acknowledge that your
-                        information will be transferred to Mailchimp for
-                        processing. Learn more about Mailchimp's{" "}
-                        <a
-                            className="text-blue underline"
-                            target="_blank" rel="noreferrer"
-                            href="https://mailchimp.com/legal/"
-                        >
-                            privacy practices
-                        </a>{" "}
-                        and a{" "}
-                        <a
-                            className="text-blue underline"
-                            target="_blank" rel="noreferrer"
-                            href="https://mailchimp.com/gdpr/"
-                        >
-                            GDPR compliance
-                        </a>
-                        .
-                    </p> */}
                     <p className="mb-4">
                         You can unsubscribe at any time by clicking the link in
                         the footer of our emails, or you can contact us on{" "}
