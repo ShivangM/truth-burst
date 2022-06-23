@@ -32,11 +32,11 @@ function Home() {
       :
       <>
         <main>
-          <div className="flex flex-col justify-center items-center w-full min-h-screen">
+          <div className="flex flex-col justify-center items-center w-full min-h-[720px] md:min-h-screen">
             <img src={back} alt="back" className='w-screen h-screen absolute z-0 md:block hidden object-cover' />
-            <img src={mobile} alt="back-mobile" className='w-screen h-screen absolute z-0 md:hidden object-cover' />
+            <img src={mobile} alt="back-mobile" className='w-screen min-h-[720px] relative z-0 md:hidden object-cover' />
 
-            <main className="flex flex-col justify-around md:flex-row relative z-10 top-14 md:top-16">
+            <main className="flex flex-col justify-around md:flex-row absolute z-10 top-[170px] md:top-[40vh]">
               <CreateRoom />
               <JoinRoom />
             </main>

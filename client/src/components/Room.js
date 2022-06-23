@@ -60,7 +60,7 @@ function Room() {
       socket.on("disconnect", () => {
         navigate("/")
         alert("You were disconnected!")
-        location.reload();
+        window.location.reload();
       });
     }
   });
