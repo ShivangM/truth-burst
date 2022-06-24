@@ -11,6 +11,11 @@ const RoomSchema = new Schema({
         type: String,
         required: true,
     },
+    anonymousPlay: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     rounds: {
         type: Number,
         required: true,

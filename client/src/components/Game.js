@@ -23,18 +23,20 @@ function Game() {
             return;
         }
 
+        const anonymousMode = document.getElementById("anonymousMode").checked
+        console.log(anonymousMode)
+
         const message = {
             room: user.room,
-            text: "Starting The Game!",
+            text: anonymousMode ? "Starting Anonymous Game!" : "Starting Game!",
             userName: "Game Room"
         }
 
         dispatch(roomActions.setLeaderboards([]))
-
         const round = roundNumber + 1
 
         socket.emit('sendMessage', message, () => alert("Error"));
-        socket.emit('changeRound', { round, room: user.room }, () => alert("Error"))
+        socket.emit('changeRound', { round, room: user.room, anonymousMode }, () => alert("Error"))
         socket.emit('generateQuestion', user.room, () => alert("Error"));
     }
 
@@ -56,9 +58,12 @@ function Game() {
                 {
                     leaderboards.length === 0 ?
                         roomData.host === user.name ?
-                            <button type="button" className="py-2 px-6 bg-[#FF5D5D] my-auto hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl font-semibold shadow-md focus:outline-none rounded-lg" onClick={startGame}>
-                                Start game
-                            </button>
+                            <div className="flex flex-col justify-center items-center m-auto">
+                                <button type="button" className="py-2 px-6 bg-[#FF5D5D] my-auto hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl font-semibold shadow-md focus:outline-none rounded-lg" onClick={startGame}>
+                                    Start game
+                                </button>
+                                <div className="flex items-center"><p className='m-2'>Anonymous Mode: </p><input type="checkbox" name="anonymousMode" id="anonymousMode" /></div>
+                            </div>
                             :
                             <div className="flex flex-col my-auto justify-center items-center h-full">
                                 <Spinner />
@@ -68,9 +73,12 @@ function Game() {
                         roomData.host === user.name ?
                             <div className="flex flex-col items-center w-full h-full">
                                 <Leaderboards />
-                                <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl font-semibold shadow-md focus:outline-none rounded-l my-4" onClick={startGame}>
-                                    Restart game
-                                </button>
+                                <div className="flex flex-col justify-center items-center m-auto">
+                                    <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl font-semibold shadow-md focus:outline-none rounded-l my-4" onClick={startGame}>
+                                        Restart game
+                                    </button>
+                                    <div className="flex items-center"><p className='m-2'>Anonymous Mode: </p><input type="checkbox" name="anonymousMode" id="anonymousMode" /></div>
+                                </div>
                             </div>
                             :
                             <div className="flex flex-col items-center w-full h-full">

@@ -5,16 +5,16 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const cors = require('cors');
 //response as Json
-app.use(express.json()); 
+app.use(express.json());
 //Parse x-www-form-urlencoded request into req.body
-app.use(express.urlencoded({ extended: true }));  
+app.use(express.urlencoded({ extended: true }));
 
 // Utils 
 const router = require("./utils/router")
 const connectToMongo = require("./db")
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
 const { getRoomData } = require('./utils/room');
-const {shuffle, generateRoomCode} = require("./utils/utilityFunctions")
+const { shuffle, generateRoomCode } = require("./utils/utilityFunctions")
 
 // Models 
 const Room = require('./models/RoomModel');
@@ -22,6 +22,7 @@ const Question = require('./models/QuestionModel');
 const Answer = require('./models/AnswerModel');
 const Vote = require('./models/VoteModel');
 const User = require('./models/UserModel');
+const Round = require('./models/RoundModel');
 
 const io = new Server(server, {
   cors: {
@@ -47,43 +48,45 @@ io.on('connection', (socket) => {
     try {
       const code = generateRoomCode()
       const newRoom = new Room({ host, code, rounds })
+      const roundData = new Round({ room: code, round: 0 })
       await newRoom.save()
+      await roundData.save()
 
       const { error } = await addUser({ id: socket.id, name: host, room: code });
-      if (error) return callback({error});
+      if (error) return callback({ error });
       await socket.join(code);
 
-      const roomData = await getRoomData(code, host)
+      const roomData = newRoom
       const users = await getUsersInRoom(code)
-      const user = {name: host, room: code, id: socket.id}
+      const user = { name: host, room: code, id: socket.id }
 
-      io.to(code).emit('roomData', roomData);
       io.to(code).emit('users', users);
-      callback({user, users, roomData});
+      callback({ user, roomData });
 
     } catch (error) {
-      return callback({error: "An Error has Occured"});
+      return callback({ error: "An Error has Occured" });
     }
   });
 
   // Join Room 
   socket.on('join', async ({ name, room }, callback) => {
     const existingRoom = await Room.findOne({ code: room }).exec()
-    if (!existingRoom) return callback({error: "Please join with valid room code"})
+    if (!existingRoom) return callback({ error: "Please join with valid room code" })
     const { error } = await addUser({ id: socket.id, name, room });
-    if (error) return callback({error});
+    if (error) return callback({ error });
 
     await socket.join(room);
     socket.broadcast.to(room).emit('message', { userName: 'Game Room', text: `${name} joined the room!` });
 
-    const roomData = await getRoomData(room, name)
+    const roomData = await existingRoom
     const users = await getUsersInRoom(room)
-    const user = {name, room, id: socket.id}
+    const user = { name, room, id: socket.id }
+    const roundData = await Round.findOne({ room: room }).exec()
+    const round = roundData.round
+    const question = roundData.currQuestion
 
-    io.to(room).emit('roomData', roomData);
     io.to(room).emit('users', users);
-
-    callback({user, users, roomData});
+    callback({ user, roomData, round, question });
   });
 
   socket.on('sendMessage', (message, callback) => {
@@ -117,20 +120,24 @@ io.on('connection', (socket) => {
       io.to(room).emit('answers', shuffle(currAnswers)) : null
   };
 
-  socket.on('changeRound', async ({ round, room }, callback) => {
+  socket.on('changeRound', async ({ round, room, anonymousMode }, callback) => {
     let error = false;
+    if (round === 1) Room.findOneAndUpdate({ room: room }, { anonymousMode: anonymousMode })
+
     if (round === 0) {
-      const currUsers = await User.find({room: room}).sort({score: -1})
+      const currUsers = await User.find({ room: room }).sort({ score: -1 })
       io.to(room).emit('leaderboards', currUsers)
       io.to(room).emit('setRound', round)
+      await Round.findOneAndUpdate({ room: room }, { round: round }).exec()
       await User.updateMany({ score: 0 }).exec()
     }
     else {
       await Answer.deleteMany({ room: room }).exec()
       await Vote.deleteMany({ room: room }).exec()
+      await Round.findOneAndUpdate({ room: room }, { round: round }).exec()
       io.to(room).emit('setRound', round)
       io.to(room).emit('message', { userName: 'Game Room', text: `Starting Round ${round}` });
-      const currUsers = await getUsersInRoom(room)
+      const currUsers = await User.find({ room: room }).sort({ score: -1 })
       io.to(room).emit('clearData', currUsers)
     }
     if (error) callback();
@@ -150,22 +157,34 @@ io.on('connection', (socket) => {
     }
 
     await User.findOneAndUpdate({ name: selected }, { $inc: { score: 100 } })
+    checkVotes(room)
+  });
 
+  const checkVotes = async (room) => {
     const currUsers = await getUsersInRoom(room)
     const currVotes = await Vote.find({ room: room }).exec()
     currUsers.length === currVotes.length ?
       io.to(room).emit('votes', currVotes) : null
-  });
+  };
 
   socket.on('generateQuestion', async (room, callback) => {
     let error = false;
-    const questions = await Question.find()
-    let randomQuestion = questions[Math.floor(Math.random() * questions.length)].question
-    const users = await getUsersInRoom(room)
-    const randomUser = users[Math.floor(Math.random() * users.length)].name
+    let { prevQuestions, prevUsers } = await Round.findOne({ room: room }).exec()
+    const questions = await Question.find({ _id: { $nin: prevQuestions } })
+    let randomQuestion = questions[Math.floor(Math.random() * questions.length)]
+    const users = await User.find({ $and: [{ room: room }, { _id: { $nin: prevUsers } }] })
+    const randomUser = users[Math.floor(Math.random() * users.length)]
 
-    randomQuestion = randomQuestion.replaceAll(NAME_REPLACER, randomUser)
+    // console.log(prevQuestions, prevUsers)
 
+    prevQuestions.push(randomQuestion._id)
+    prevUsers.push(randomUser._id)
+
+    if (users.length === 1) prevUsers = []
+    if (questions.length === 1) prevQuestions = []
+    randomQuestion = randomQuestion.question.replaceAll(NAME_REPLACER, randomUser.name)
+
+    await Round.findOneAndUpdate({ room: room }, { currQuestion: randomQuestion, prevQuestions, prevUsers })
     io.to(room).emit('question', randomQuestion);
 
     if (error) callback();
@@ -173,7 +192,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', async () => {
     const user = await getUser(socket.id);
-    
+
     if (user) {
       removeUser(socket.id)
       io.to(user.room).emit('message', { user: 'Game Room', text: `${user.name} has left.` });
@@ -182,10 +201,12 @@ io.on('connection', (socket) => {
 
       io.to(user.room).emit('roomData', roomData);
       io.to(user.room).emit('users', users);
-      
+
       try {
         await Answer.findOneAndDelete({ $and: [{ name: user.name }, { room: user.room }] }).exec()
+        await Vote.findOneAndDelete({ $and: [{ name: user.name }, { room: user.room }] }).exec()
         checkAnswer(user.room)
+        checkVotes(user.room)
       } catch (error) {
 
       }

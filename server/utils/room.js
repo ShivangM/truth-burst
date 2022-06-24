@@ -1,4 +1,5 @@
 const Room = require("../models/RoomModel")
+const Round = require("../models/RoundModel")
 const Vote = require("../models/VoteModel")
 const { getUsersInRoom } = require("./users")
 
@@ -12,6 +13,7 @@ const getRoomData = async (roomCode, name)=>{
         else{
             await Room.findByIdAndDelete(room._id)
             await Vote.deleteMany({room: roomCode}).exec()
+            await Round.findOneAndDelete({room: roomCode})
         }
         
     }

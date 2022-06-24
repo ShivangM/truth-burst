@@ -20,7 +20,7 @@ function CreateRoom() {
 
         dispatch(roomActions.setLoading(true))
 
-        await socket.emit('createRoom', { host: name, rounds: rounds }, ({ error, user, roomData, users }) => {
+        await socket.emit('createRoom', { host: name, rounds: rounds }, ({ error, user, roomData }) => {
             if (error) {
                 dispatch(roomActions.setLoading(false))
                 alert(error);
@@ -28,7 +28,6 @@ function CreateRoom() {
             else {
                 dispatch(userActions.setUser(user))
                 dispatch(roomActions.setRoomData(roomData))
-                dispatch(userActions.setActiveUser(users))
                 setTimeout(() => {
                     dispatch(roomActions.setLoading(false))
                     navigate('/room')

@@ -14,6 +14,7 @@ function Answer(props) {
     const socket = useSelector(state => state.user.socket)
     const votes = useSelector(state => state.room.votes)
     const selected = useSelector(state => state.user.selected)
+    const roomData = useSelector(state => state.room.roomData)
     const dispatch = useDispatch()
 
     const vote = (name) => {
@@ -35,15 +36,15 @@ function Answer(props) {
         votes.length > 0 ?
             answer.name === user.name ?
                 <div className={currentUser} key={props.key}>
-                    <p className='flex'><b className='font-semibold'>{answer.name}:</b> <p className='flex break-words pl-1'>{ReactEmoji.emojify(answer.text)}</p></p>
+                    <p className='flex'>{roomData.anonymousMode ? <b className='font-semibold'>{answer.name}:</b> : null} <p className='flex break-words pl-1'>{ReactEmoji.emojify(answer.text)}</p></p>
                     <p><b className='font-semibold'>Vote Count:</b> {votesOnAnswer.length}</p>
-                    <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p>
+                    {roomData.anonymousMode ? <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p> : null}
                 </div>
                 :
                 <div className={otherUsersDiv} key={props.key}>
-                    <p className='flex'><b className='font-semibold'>{answer.name}:</b> <p className='flex break-words pl-1'>{ReactEmoji.emojify(answer.text)}</p></p>
+                    <p className='flex'>{roomData.anonymousMode ? <b className='font-semibold'>{answer.name}:</b> : null} <p className='flex break-words pl-1'>{ReactEmoji.emojify(answer.text)}</p></p>
                     <p><b className='font-semibold'>Vote Count:</b> {votesOnAnswer.length}</p>
-                    <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p>
+                    {roomData.anonymousMode ? <p><b className='font-semibold'>Voters:</b> {voters === "" ? "None" : voters}</p> : null}
                 </div>
             :
             answer.name === user.name ?

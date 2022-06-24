@@ -1,13 +1,15 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import Chat from './Chat'
 import { AiOutlineSend } from 'react-icons/ai';
 import ScrollToBottom from 'react-scroll-to-bottom';
+import { messageActions } from '../store/messageSlice';
 
 function ChatBox() {
   const messages = useSelector(state => state.messages.messages)
   const user = useSelector(state => state.user.user)
   const socket = useSelector(state => state.user.socket)
+  const dispatch = useDispatch()
 
   const sendMessage = ()=>{
     const text = document.getElementById("message").value
@@ -21,6 +23,15 @@ function ChatBox() {
     socket.emit('sendMessage', message, () => alert("Error"));
     document.getElementById("message").value = ""
   }
+
+  useEffect(() => {
+    console.log("ran")
+    if (socket) {
+      socket.on('message', message => {
+        dispatch(messageActions.setMessages(message))
+      });
+    }
+  }, [])
 
   return (
     <div className='h-full w-full p-2 bg-[#FFC3C3] rounded-2xl flex flex-col'>

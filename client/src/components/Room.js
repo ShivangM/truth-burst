@@ -7,12 +7,12 @@ import { TbClipboardText } from 'react-icons/tb'
 import { ImClipboard } from 'react-icons/im'
 import Game from './Game';
 import { userActions } from '../store/userSlice';
-import { messageActions } from '../store/messageSlice';
 import { roomActions } from '../store/roomSlice';
 
 function Room() {
   const user = useSelector(state => state.user.user)
   const socket = useSelector(state => state.user.socket)
+  // const messages = useSelector(state => state.messages.messages)
   const room = user.room
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -21,23 +21,18 @@ function Room() {
     if (room === "") navigate("/")
   }, [room, navigate]);
 
-
   useEffect(() => {
     if (socket) {
-      socket.on('message', message => {
-        dispatch(messageActions.setMessage(message))
-      });
-
-      socket.on('roomData', roomData => {
-        dispatch(roomActions.setRoomData(roomData))
-      });
-
       socket.on('users', users => {
         dispatch(userActions.setActiveUser(users))
       });
 
       socket.on('question', question => {
         dispatch(roomActions.setQuestion(question))
+      });
+
+      socket.on('roomData', roomData => {
+        dispatch(roomActions.setRoomData(roomData))
       });
 
       socket.on('answers', answers => {
@@ -48,12 +43,12 @@ function Room() {
         dispatch(roomActions.setVotes(votes))
       });
 
-      socket.on('clearData', users => {
+      socket.on('clearData', currUsers => {
         dispatch(roomActions.setAnswers([]))
         dispatch(roomActions.setVotes([]))
-        dispatch(userActions.setActiveUser(users))
         dispatch(userActions.setSelected(""))
         dispatch(userActions.setDisabled(false))
+        dispatch(userActions.setActiveUser(currUsers))
         document.getElementById("answer").value = ""
       });
 
@@ -63,7 +58,7 @@ function Room() {
         window.location.reload();
       });
     }
-  });
+  }, [socket]);
 
   const [copied, setCopied] = useState(false);
 
