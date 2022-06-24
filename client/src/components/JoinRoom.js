@@ -17,12 +17,13 @@ function JoinRoom() {
 
         dispatch(roomActions.setLoading(true))
 
-        await socket.emit('join', { name: name, room: room }, ({ error, user, roomData, round, question }) => {
+        await socket.emit('join', { name: name, room: room }, ({ error, user, roomData, round, question, users }) => {
             if (error) {
                 dispatch(roomActions.setLoading(false))
                 alert(error);
             }
             else {
+                dispatch(userActions.setActiveUser(users))
                 dispatch(userActions.setUser(user))
                 dispatch(roomActions.setRoomData(roomData))
                 dispatch(roomActions.setRoundNumber(round))

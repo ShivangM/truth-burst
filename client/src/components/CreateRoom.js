@@ -20,12 +20,13 @@ function CreateRoom() {
 
         dispatch(roomActions.setLoading(true))
 
-        await socket.emit('createRoom', { host: name, rounds: rounds }, ({ error, user, roomData }) => {
+        await socket.emit('createRoom', { host: name, rounds: rounds }, ({ error, user, roomData, users }) => {
             if (error) {
                 dispatch(roomActions.setLoading(false))
                 alert(error);
             }
             else {
+                dispatch(userActions.setActiveUser(users))
                 dispatch(userActions.setUser(user))
                 dispatch(roomActions.setRoomData(roomData))
                 setTimeout(() => {

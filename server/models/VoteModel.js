@@ -9,7 +9,6 @@ const VoteSchema = new Schema({
     voter: {
         type: String,
         required: true,
-        unique: true
     },
     room: {
         type: String,

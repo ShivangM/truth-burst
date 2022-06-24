@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
       const user = { name: host, room: code, id: socket.id }
 
       io.to(code).emit('users', users);
-      callback({ user, roomData });
+      callback({ user, users, roomData });
 
     } catch (error) {
       return callback({ error: "An Error has Occured" });
@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
     const question = roundData.currQuestion
 
     io.to(room).emit('users', users);
-    callback({ user, roomData, round, question });
+    callback({ user, roomData, round, question, users });
   });
 
   socket.on('sendMessage', (message, callback) => {
@@ -120,10 +120,8 @@ io.on('connection', (socket) => {
       io.to(room).emit('answers', shuffle(currAnswers)) : null
   };
 
-  socket.on('changeRound', async ({ round, room, anonymousMode }, callback) => {
+  socket.on('changeRound', async ({ round, room }, callback) => {
     let error = false;
-    if (round === 1) Room.findOneAndUpdate({ room: room }, { anonymousMode: anonymousMode })
-
     if (round === 0) {
       const currUsers = await User.find({ room: room }).sort({ score: -1 })
       io.to(room).emit('leaderboards', currUsers)
@@ -143,6 +141,14 @@ io.on('connection', (socket) => {
     if (error) callback();
   });
 
+  socket.on('mode', async ({ room, anonymousMode }, callback) => {
+    let error = false;
+    await Room.findOneAndUpdate({ room: room }, { anonymousMode: anonymousMode })
+    const roomData = await getRoomData(room)
+    io.to(room).emit('roomData', roomData);
+    if (error) callback();
+  });
+
   socket.on('vote', async ({ selected, voter, room }, callback) => {
     const vote = new Vote({
       selected: selected,
@@ -153,6 +159,7 @@ io.on('connection', (socket) => {
     try {
       await vote.save()
     } catch (error) {
+      console.log(error)
       callback();
     }
 

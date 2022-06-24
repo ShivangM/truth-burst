@@ -25,7 +25,6 @@ function ChatBox() {
   }
 
   useEffect(() => {
-    console.log("ran")
     if (socket) {
       socket.on('message', message => {
         dispatch(messageActions.setMessages(message))

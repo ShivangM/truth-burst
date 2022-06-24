@@ -18,7 +18,7 @@ function Contact() {
                 <div className="xl:w-5/6 xl:px-0 px-8 mx-auto">
                     <h1 className="xl:text-4xl text-3xl pb-4 text-white font-bold">Get in touch</h1>
                     <p className="text-xl text-white pb-8 leading-relaxed font-normal lg:pr-4">Got a question to add in game? Are you interested in partnering with us? Have some suggestions or just want to say Hi? Lets Talk!</p>
-                    <p className="text-xl text-white pb-8 leading-relaxed font-normal lg:pr-4">If you encounter any issues during your gaming sessions, please, contact us at email bellow</p>
+                    <p className="text-xl text-white pb-8 leading-relaxed font-normal lg:pr-4">If you encounter any issues during your gaming sessions, please, contact us at email below</p>
                     <div className="flex items-center">
                         <div>
                             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-mail" width={20} height={20} viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFFFFF" fill="none" strokeLinecap="round" strokeLinejoin="round">

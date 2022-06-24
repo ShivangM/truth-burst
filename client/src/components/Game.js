@@ -24,7 +24,6 @@ function Game() {
         }
 
         const anonymousMode = document.getElementById("anonymousMode").checked
-        console.log(anonymousMode)
 
         const message = {
             room: user.room,
@@ -36,7 +35,8 @@ function Game() {
         const round = roundNumber + 1
 
         socket.emit('sendMessage', message, () => alert("Error"));
-        socket.emit('changeRound', { round, room: user.room, anonymousMode }, () => alert("Error"))
+        socket.emit('mode', { room: user.room, anonymousMode: anonymousMode }, () => alert("Error"));
+        socket.emit('changeRound', { round, room: user.room }, () => alert("Error"))
         socket.emit('generateQuestion', user.room, () => alert("Error"));
     }
 

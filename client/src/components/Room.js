@@ -12,7 +12,6 @@ import { roomActions } from '../store/roomSlice';
 function Room() {
   const user = useSelector(state => state.user.user)
   const socket = useSelector(state => state.user.socket)
-  // const messages = useSelector(state => state.messages.messages)
   const room = user.room
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -39,8 +38,8 @@ function Room() {
         dispatch(roomActions.setAnswers(answers))
       });
 
-      socket.on('votes', votes => {
-        dispatch(roomActions.setVotes(votes))
+      socket.on('votes', currVotes => {
+        dispatch(roomActions.setVotes(currVotes))
       });
 
       socket.on('clearData', currUsers => {
@@ -58,7 +57,7 @@ function Room() {
         window.location.reload();
       });
     }
-  }, [socket]);
+  }, []);
 
   const [copied, setCopied] = useState(false);
 

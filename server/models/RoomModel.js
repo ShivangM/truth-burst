@@ -11,7 +11,7 @@ const RoomSchema = new Schema({
         type: String,
         required: true,
     },
-    anonymousPlay: {
+    anonymousMode: {
         type: Boolean,
         required: true,
         default: false
