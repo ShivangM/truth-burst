@@ -84,9 +84,22 @@ io.on('connection', (socket) => {
     const roundData = await Round.findOne({ room: room }).exec()
     const round = roundData.round
     const question = roundData.currQuestion
+    const currVotes = await Vote.find({ room: room }).exec()
+    const currAnswers = await Answer.find({ room: room })
+
+    let answers = []
+    let votes = []
+
+    if (currVotes.length === (users.length - 1)) {
+      votes = currVotes
+    }
+    
+    if (currAnswers.length === (users.length - 1)) {
+      answers = currAnswers
+    }
 
     io.to(room).emit('users', users);
-    callback({ user, roomData, round, question, users });
+    callback({ user, roomData, round, question, users, answers, votes });
   });
 
   socket.on('sendMessage', (message, callback) => {
@@ -170,7 +183,7 @@ io.on('connection', (socket) => {
   const checkVotes = async (room) => {
     const currUsers = await getUsersInRoom(room)
     const currVotes = await Vote.find({ room: room }).exec()
-    currUsers.length === currVotes.length ?
+    currUsers.length <= currVotes.length ?
       io.to(room).emit('votes', currVotes) : null
   };
 
@@ -181,8 +194,6 @@ io.on('connection', (socket) => {
     let randomQuestion = questions[Math.floor(Math.random() * questions.length)]
     const users = await User.find({ $and: [{ room: room }, { _id: { $nin: prevUsers } }] })
     const randomUser = users[Math.floor(Math.random() * users.length)]
-
-    // console.log(prevQuestions, prevUsers)
 
     prevQuestions.push(randomQuestion._id)
     prevUsers.push(randomUser._id)
@@ -211,7 +222,6 @@ io.on('connection', (socket) => {
 
       try {
         await Answer.findOneAndDelete({ $and: [{ name: user.name }, { room: user.room }] }).exec()
-        await Vote.findOneAndDelete({ $and: [{ name: user.name }, { room: user.room }] }).exec()
         checkAnswer(user.room)
         checkVotes(user.room)
       } catch (error) {

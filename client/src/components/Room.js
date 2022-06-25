@@ -57,7 +57,7 @@ function Room() {
         window.location.reload();
       });
     }
-  }, []);
+  });
 
   const [copied, setCopied] = useState(false);
 

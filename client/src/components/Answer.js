@@ -32,8 +32,6 @@ function Answer(props) {
         voters += element.voter + " "
     });
 
-    console.log(votes)
-
     return (
         votes.length > 0 ?
             answer.name === user.name ?

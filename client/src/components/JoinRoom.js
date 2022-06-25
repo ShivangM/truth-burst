@@ -17,7 +17,7 @@ function JoinRoom() {
 
         dispatch(roomActions.setLoading(true))
 
-        await socket.emit('join', { name: name, room: room }, ({ error, user, roomData, round, question, users }) => {
+        await socket.emit('join', { name: name, room: room }, ({ error, user, roomData, round, question, users, answers, votes }) => {
             if (error) {
                 dispatch(roomActions.setLoading(false))
                 alert(error);
@@ -28,6 +28,9 @@ function JoinRoom() {
                 dispatch(roomActions.setRoomData(roomData))
                 dispatch(roomActions.setRoundNumber(round))
                 dispatch(roomActions.setQuestion(question))
+                dispatch(roomActions.setAnswers(answers))
+                dispatch(roomActions.setVotes(votes))
+                dispatch(userActions.setDisabled(true))
                 setTimeout(() => {
                     dispatch(roomActions.setLoading(false))
                     navigate('/room')
