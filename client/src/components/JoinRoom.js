@@ -30,7 +30,7 @@ function JoinRoom() {
                 dispatch(roomActions.setQuestion(question))
                 dispatch(roomActions.setAnswers(answers))
                 dispatch(roomActions.setVotes(votes))
-                dispatch(userActions.setDisabled(true))
+                if(answers.length > 0) dispatch(userActions.setDisabled(true))
                 setTimeout(() => {
                     dispatch(roomActions.setLoading(false))
                     navigate('/room')

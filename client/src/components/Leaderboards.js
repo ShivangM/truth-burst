@@ -8,7 +8,7 @@ function Leaderboards() {
         <div className='w-full md:w-5/6 flex item-center flex-col'>
             <h1 className='text-2xl font-semibold p-4 text-center'>Leaderboards</h1>
 
-            <table className="max-h-[70vh] overflow-y-scroll">
+            <table className="">
                 <thead className="text-base uppercase dark:bg-[#FF5D5D] dark:text-white">
                     <tr>
                         <th scope="col" className="px-3 md:px-6 py-3">

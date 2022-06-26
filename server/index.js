@@ -90,11 +90,12 @@ io.on('connection', (socket) => {
     let answers = []
     let votes = []
 
-    if (currVotes.length === (users.length - 1)) {
+    if (roundData.status === "voted") {
+      answers = currAnswers
       votes = currVotes
     }
     
-    if (currAnswers.length === (users.length - 1)) {
+    if (roundData.status === "answered") {
       answers = currAnswers
     }
 
@@ -129,12 +130,15 @@ io.on('connection', (socket) => {
     const currUsers = await getUsersInRoom(room)
     const currAnswers = await Answer.find({ room: room })
 
-    currUsers.length === currAnswers.length ?
-      io.to(room).emit('answers', shuffle(currAnswers)) : null
+    if (currUsers.length === currAnswers.length){
+      io.to(room).emit('answers', shuffle(currAnswers))
+      await Round.findOneAndUpdate({room: room}, {status: "answered"})
+    }
   };
 
   socket.on('changeRound', async ({ round, room }, callback) => {
     let error = false;
+    await Round.findOneAndUpdate({room: room}, {status: "ongoing"})
     if (round === 0) {
       const currUsers = await User.find({ room: room }).sort({ score: -1 })
       io.to(room).emit('leaderboards', currUsers)
@@ -183,8 +187,10 @@ io.on('connection', (socket) => {
   const checkVotes = async (room) => {
     const currUsers = await getUsersInRoom(room)
     const currVotes = await Vote.find({ room: room }).exec()
-    currUsers.length <= currVotes.length ?
-      io.to(room).emit('votes', currVotes) : null
+    if(currUsers.length <= currVotes.length){
+      io.to(room).emit('votes', currVotes)
+      await Round.findOneAndUpdate({room: room}, {status: "voted"})
+    }
   };
 
   socket.on('generateQuestion', async (room, callback) => {

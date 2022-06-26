@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 
 function ScoreCard(props) {
     const roomData = useSelector(state => state.room.roomData)
+    
     return (
         <div className="max-w-sm bg-[#FF8C8C] h-full rounded-lg border border-gray-200 shadow-md">
             <div className="flex flex-col items-center py-2 md:py-4 lg:py-6">

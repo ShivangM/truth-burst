@@ -7,6 +7,11 @@ const RoundSchema = new Schema({
         required: true,
         unique: true,
     },
+    status: {
+        type: String,
+        required: true,
+        default: "ongoing"
+    },
     round: {
         type: Number,
         required: true,

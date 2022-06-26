@@ -71,7 +71,7 @@ function Game() {
                             </div>
                         :
                         roomData.host === user.name ?
-                            <div className="flex flex-col items-center w-full h-full">
+                            <div className="flex flex-col items-center w-full h-full overflow-y-auto">
                                 <Leaderboards />
                                 <div className="flex flex-col justify-center items-center m-auto">
                                     <button type="button" className="py-2 px-6 bg-[#FF5D5D] hover:bg-[#fa5050] text-white transition ease-in duration-200 text-center text-2xl font-semibold shadow-md focus:outline-none rounded-l my-4" onClick={startGame}>
@@ -81,7 +81,7 @@ function Game() {
                                 </div>
                             </div>
                             :
-                            <div className="flex flex-col items-center w-full h-full">
+                            <div className="flex flex-col items-center w-full h-full overflow-y-auto">
                                 <Leaderboards />
                             </div>
                 }
